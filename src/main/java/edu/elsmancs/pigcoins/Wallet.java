@@ -8,9 +8,9 @@ public class Wallet {
 
 	private PublicKey address = null;
 	private PrivateKey sKey = null;
-	private double total_input = 0;
-	private double total_output = 0;
-	private double balance = 0;
+	private double total_input = 0d;
+	private double total_output = 0d;
+	private double balance = 0d;
 
 	void generateKeyPair() {
 		KeyPair pair = GenSig.generateKeyPair();
@@ -32,5 +32,19 @@ public class Wallet {
 
 	private PrivateKey getsKey() {
 		return this.sKey;
+	}
+
+	double getBalance() {
+		return balance;
+	}
+
+	void setBalance(double balance) {
+		this.balance = balance;
+	}
+
+	@Override
+	public String toString() {
+		return "\nWallet = " + getAddress().hashCode() + "\n" + "Total input = " + total_input + "\n"
+				+ "Total output = " + total_output + "\n" + "Balance = " + getBalance() + "\n";
 	}
 }
