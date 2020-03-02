@@ -38,13 +38,42 @@ public class Wallet {
 		return balance;
 	}
 
-	void setBalance(double balance) {
-		this.balance = balance;
+	void setBalance() {
+		if (getTotal_input() - getTotal_output() >= 0) {
+			this.balance = getTotal_input() - getTotal_output();
+		}
+	}
+
+	double getTotal_input() {
+		return total_input;
+	}
+
+	private void setTotal_input(double pigcoins) {
+		this.total_input += pigcoins;
+	}
+
+	double getTotal_output() {
+		return total_output;
+	}
+
+	private void setTotal_output(double pigcoins) {
+		this.total_output += pigcoins;
 	}
 
 	@Override
 	public String toString() {
-		return "\nWallet = " + getAddress().hashCode() + "\n" + "Total input = " + total_input + "\n"
-				+ "Total output = " + total_output + "\n" + "Balance = " + getBalance() + "\n";
+		return "\nWallet = " + getAddress().hashCode() + "\n" + "Total input = " + getTotal_input() + "\n"
+				+ "Total output = " + getTotal_output() + "\n" + "Balance = " + getBalance() + "\n";
+	}
+
+	public void loadCoins(BlockChain bChain) {
+		for (Transaction transaccion : bChain.getBlockChain()) {
+			if (transaccion.getpKey_recipient() == getAddress()) {
+				setTotal_input(transaccion.getPigcoins());
+			} else if (transaccion.getpKey_sender() == getAddress()) {
+				setTotal_output(transaccion.getPigcoins());
+			}
+		}
+		setBalance();
 	}
 }
