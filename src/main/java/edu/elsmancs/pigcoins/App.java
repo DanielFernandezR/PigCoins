@@ -103,6 +103,86 @@ public class App {
 
 		System.out.println("\n" + "Ver las transacciones ENTRANTES de la wallet_1" + "\n"
 				+ "==============================================");
+		wallet_1.loadInputTransactions(bChain);
+		System.out.println("Wallet = " + wallet_1.getAddress().hashCode());
+		System.out.println("Transacciones = " + wallet_1.getInputTransactions().toString());
+
+		System.out.println("\n" + "Ver las transacciones ENVIADAS de la wallet_1" + "\n"
+				+ "==============================================");
+		wallet_1.loadOutputTransactions(bChain);
+		System.out.println("Wallet = " + wallet_1.getAddress().hashCode());
+		System.out.println("Transacciones = " + wallet_1.getOutputTransactions().toString());
+
+		System.out.println("\n" + "Ver las transacciones entrantes de la wallet_2" + "\n"
+				+ "==============================================");
+		wallet_2.loadInputTransactions(bChain);
+		System.out.println("Wallet = " + wallet_1.getAddress().hashCode());
+		System.out.println("Transacciones = " + wallet_2.getInputTransactions().toString());
+
+		/**
+		 * Recargamos la wallet_1 y visualizamos el blockchain
+		 */
+
+		System.out.println("\n" + ">>>>>>>>>>>> RECARGA WALLET_1 >>>>>>>>>>>>" + "\n");
+
+		trx = new Transaction("hash_4", "2", origin.getAddress(), wallet_1.getAddress(), 20, "sausages puagh!");
+		bChain.addOrigin(trx);
+		trx = new Transaction("hash_5", "3", origin.getAddress(), wallet_1.getAddress(), 10, "baked beans are off!");
+		bChain.addOrigin(trx);
+
+		System.out.println("\n" + "Ver BlockChain" + "\n" + "==============");
+		bChain.summarize();
+
+		System.out.println("\n" + "Ver el total de pigcoins de las dos wallet" + "\n"
+				+ "==========================================");
+
+		wallet_1.loadCoins(bChain);
+		wallet_1.loadInputTransactions(bChain);
+		wallet_1.loadOutputTransactions(bChain);
+		System.out.println(wallet_1.toString());
+
+		wallet_2.loadCoins(bChain);
+		wallet_2.loadInputTransactions(bChain);
+		wallet_2.loadOutputTransactions(bChain);
+		System.out.println(wallet_2.toString());
+
+		/**
+		 * Enviar pigcoins de la wallet_1 a la wallet_2 Este es el flujo de trabajo que
+		 * has de programar.
+		 * 
+		 * wallet_1.sendCoins(wallet_2.getAddress(), pigcoins, message, bChain) {
+		 * 
+		 * collectCoins(pigcoins); signTransaction(message);
+		 * bChain.processTransactions(pKey_sender, pKey_recipient, consumedCoins,
+		 * message, signedTransaction); };
+		 * 
+		 * bChain.processTransactions(pKey_sender, pKey_recipient, consumedCoins,
+		 * message, signedTransaction) {
+		 * 
+		 * isSignatureValid(public_Key, message, signedTransaction)
+		 * isConsumedCoinValid(consumedCoins); createTransaction(pKey_sender,
+		 * pKey_recipient, consumedCoins,message, signedTransaction); }
+		 * 
+		 * A continuacion se detalla la responsabilidad de cada metodo.
+		 */
+
+		System.out.println("\n" + ">>>>>>>>>>>> Wallet_1 envia transaccion de pigcoins a wallet_2 >>>>>>>>>>>>" + "\n");
+
+		/**
+		 * Primero has de recolectar los suficientes pigcoins de tu wallet Para ello has
+		 * de eliminar de las transacciones entrantes de la wallet las que ya se han
+		 * utilizado para enviar pigcoins
+		 */
+
+		/**
+		 * Los pigcoins son indivisibles, asi que si necesitas 5.2 y no tienes ninguna
+		 * transaccion entrante exacta de 5.2, has de realizar un CHANGE ADDRESS (CA):
+		 * Consiste en reutilizar una transaccion entrante mayor que 5.2, por ejemplo
+		 * 10, y enviar dos transacciones: - una transaccion de 5.2 al destinatario -
+		 * otra transaccion de 10 - 5.2 = 4.8 a ti mismo/a Ten cuidado: no puedes
+		 * utilizar transacciones entrantes (pigcoins) que ya hayas enviado con
+		 * anterioridad o el blockchain rechazara las nuevas
+		 */
 
 	}
 }
