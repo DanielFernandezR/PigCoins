@@ -40,4 +40,8 @@ public class BlockChain {
 		}
 		return pigcoins;
 	}
+
+	void processTransactions(PublicKey pKey_sender, PublicKey pKey_recipient, Double consumedCoins, String message) {
+
+	}
 }

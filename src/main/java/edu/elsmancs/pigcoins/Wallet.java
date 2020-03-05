@@ -4,6 +4,7 @@ import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -101,5 +102,40 @@ public class Wallet {
 				getOutputTransactions().add(transaccion);
 			}
 		}
+	}
+
+	public void sendCoins(PublicKey address, Double pigcoins, String message, BlockChain bChain) {
+		collectCoins(pigcoins);
+	}
+
+	public byte[] signTransaction(String message) {
+		byte[] mensajeFirmado = GenSig.sign(getsKey(), message);
+		if (GenSig.verify(getAddress(), message, mensajeFirmado)) {
+			return mensajeFirmado;
+		} else {
+			return null;
+		}
+	}
+
+	Map<String, Double> collectCoins(Double pigcoins) {
+		Map<String, Double> Coins = new HashMap<String, Double>();
+		List<Transaction> inputTransactions = getInputTransactions();
+		List<Transaction> outputTransactions = getOutputTransactions();
+		Double contadorCoins = 0d;
+		for (Transaction transaccion : inputTransactions) {
+			if (pigcoins == transaccion.getPigcoins()) {
+				Coins.clear();
+				Coins.put(transaccion.getHash(), transaccion.getPigcoins());
+				return Coins;
+			} else if (pigcoins > transaccion.getPigcoins()) {
+				Coins.put(transaccion.getHash(), transaccion.getPigcoins());
+				if (contadorCoins == pigcoins) {
+					return Coins;
+				}
+			} else {
+
+			}
+		}
+		return Coins;
 	}
 }
