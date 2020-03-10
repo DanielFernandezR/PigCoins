@@ -47,9 +47,7 @@ public class Wallet {
 	}
 
 	void setBalance() {
-		if (getTotal_input() - getTotal_output() >= 0) {
-			this.balance = getTotal_input() - getTotal_output();
-		}
+		this.balance = getTotal_input() - getTotal_output();
 	}
 
 	double getTotal_input() {
@@ -76,6 +74,14 @@ public class Wallet {
 		return outputTransactions;
 	}
 
+	private void setInputTransactions(List<Transaction> InputTransactions) {
+		this.inputTransactions = InputTransactions;
+	}
+
+	private void setOutputTransactions(List<Transaction> OutputTransactions) {
+		this.outputTransactions = OutputTransactions;
+	}
+
 	@Override
 	public String toString() {
 		return "\nWallet = " + getAddress().hashCode() + "\n" + "Total input = " + getTotal_input() + "\n"
@@ -83,40 +89,23 @@ public class Wallet {
 	}
 
 	public void loadCoins(BlockChain bChain) {
-		Map<String, Double> pigcoins = bChain.loadWallet(getAddress());
-		setTotal_input(pigcoins.get("input"));
-		setTotal_output(pigcoins.get("output"));
+		double[] pigcoins = { 0d, 0d };
+		pigcoins = bChain.loadWallet(getAddress());
+		setTotal_input(pigcoins[0]);
+		setTotal_output(pigcoins[1]);
 		setBalance();
 	}
 
 	public void loadInputTransactions(BlockChain bChain) {
-		for (Transaction transaccion : bChain.getBlockChain()) {
-			if (transaccion.getpKey_recipient() == getAddress()) {
-				getInputTransactions().add(transaccion);
-			}
-		}
-
+		setInputTransactions(bChain.loadInputTransactions(getAddress()));
 	}
 
 	public void loadOutputTransactions(BlockChain bChain) {
-		for (Transaction transaccion : bChain.getBlockChain()) {
-			if (transaccion.getpKey_sender() == getAddress()) {
-				getOutputTransactions().add(transaccion);
-			}
-		}
-	}
-
-	public void sendCoins(PublicKey address, Double pigcoins, String message, BlockChain bChain) {
-		collectCoins(pigcoins);
+		setOutputTransactions(bChain.loadOutputTransactions(getAddress()));
 	}
 
 	public byte[] signTransaction(String message) {
-		byte[] mensajeFirmado = GenSig.sign(getsKey(), message);
-		if (GenSig.verify(getAddress(), message, mensajeFirmado)) {
-			return mensajeFirmado;
-		} else {
-			return null;
-		}
+		return GenSig.sign(getsKey(), message);
 	}
 
 	Map<String, Double> collectCoins(Double pigcoins) {
@@ -161,4 +150,16 @@ public class Wallet {
 		return collectedCoins;
 	}
 
+	public void sendCoins(PublicKey address, Double pigcoins, String message, BlockChain bChain) {
+
+		Map<String, Double> consumedCoins = new LinkedHashMap<>();
+
+		consumedCoins = collectCoins(pigcoins);
+
+		if (consumedCoins != null) {
+			bChain.processTransactions(getAddress(), address, consumedCoins, message, signTransaction(message));
+		}
+
+		this.loadCoins(bChain);
+	}
 }
