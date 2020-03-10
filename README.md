@@ -11,12 +11,13 @@ Vamos a construir un prototipo de nuestra criptomoneda **Pigcoin** que permite g
 
 ## Qué utilizamos en este proyecto?
 
-1. Maps (Hashmap)
+1. Maps (LinkedHashmap)
 2. Métodos de Maps (get, put, containsValue)
 3. For / If Else
 4. ArrayList / List.of
-5. Interfaces
-6. TDD (Casos Test)
-7. Abstracción
-8. Polimorfismo
-9. Encapsulación
+5. TDD (Casos Test)
+6. Abstracción
+7. Polimorfismo
+8. Encapsulación
+9. Set (HashSet)
+10. Streams (filter, collect)
