@@ -62,7 +62,7 @@ public class BlockChain {
 		return true;
 	}
 
-	private void createTransaction(PublicKey pKey_sender, PublicKey pKey_recipient, Map<String, Double> consumedCoins,
+	void createTransaction(PublicKey pKey_sender, PublicKey pKey_recipient, Map<String, Double> consumedCoins,
 			String message, byte[] signedTransaction) {
 
 		PublicKey address_recipient = pKey_recipient;
