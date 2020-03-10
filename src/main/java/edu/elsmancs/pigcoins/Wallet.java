@@ -4,9 +4,11 @@ import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class Wallet {
 
@@ -118,24 +120,45 @@ public class Wallet {
 	}
 
 	Map<String, Double> collectCoins(Double pigcoins) {
-		Map<String, Double> Coins = new HashMap<String, Double>();
-		List<Transaction> inputTransactions = getInputTransactions();
-		List<Transaction> outputTransactions = getOutputTransactions();
-		Double contadorCoins = 0d;
-		for (Transaction transaccion : inputTransactions) {
-			if (pigcoins == transaccion.getPigcoins()) {
-				Coins.clear();
-				Coins.put(transaccion.getHash(), transaccion.getPigcoins());
-				return Coins;
-			} else if (pigcoins > transaccion.getPigcoins()) {
-				Coins.put(transaccion.getHash(), transaccion.getPigcoins());
-				if (contadorCoins == pigcoins) {
-					return Coins;
-				}
-			} else {
+		if (getInputTransactions() == null) {
+			return null;
+		}
 
+		if (pigcoins > getBalance()) {
+			return null;
+		}
+
+		Set<String> consumedCoins = new HashSet<>();
+		if (getOutputTransactions() != null) {
+			for (Transaction transaction : getOutputTransactions()) {
+				consumedCoins.add(transaction.getPrev_hash());
 			}
 		}
-		return Coins;
+
+		Double contadorCoins = 0d;
+		Map<String, Double> collectedCoins = new LinkedHashMap<String, Double>();
+		for (Transaction transaccion : getInputTransactions()) {
+			if (consumedCoins.contains(transaccion.getHash())) {
+				continue;
+			}
+
+			if (pigcoins == transaccion.getPigcoins()) {
+				collectedCoins.put(transaccion.getHash(), transaccion.getPigcoins());
+				consumedCoins.add(transaccion.getHash());
+				break;
+			} else if (pigcoins < transaccion.getPigcoins()) {
+				collectedCoins.put(transaccion.getHash(), pigcoins);
+				collectedCoins.put("CA_" + transaccion.getHash(), transaccion.getPigcoins() - pigcoins);
+				consumedCoins.add(transaccion.getHash());
+				break;
+			} else {
+				collectedCoins.put(transaccion.getHash(), transaccion.getPigcoins());
+				contadorCoins = transaccion.getPigcoins();
+				pigcoins = pigcoins - contadorCoins;
+				consumedCoins.add(transaccion.getHash());
+			}
+		}
+		return collectedCoins;
 	}
+
 }
